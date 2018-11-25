@@ -13,41 +13,50 @@ import (
 	"github.com/vterdunov/go-grpc-http-rest-microservice-tutorial/pkg/api/v1"
 )
 
-const apiVersion = "v1"
+const (
+	// apiVersion is version of API is provided by server
+	apiVersion = "v1"
+)
 
+// toDoServiceServer is implementation of v1.ToDoServiceServer proto interface
 type toDoServiceServer struct {
 	db *sql.DB
 }
 
+// NewToDoServiceServer creates ToDo service
 func NewToDoServiceServer(db *sql.DB) v1.ToDoServiceServer {
 	return &toDoServiceServer{db: db}
 }
 
+// checkAPI checks if the API version requested by client is supported by server
 func (s *toDoServiceServer) checkAPI(api string) error {
-	if api != apiVersion {
-		return status.Errorf(
-			codes.Unimplemented,
-			"unsupported API version: service implements API version '%s', but asked for '%s'", apiVersion, api,
-		)
+	// API version is "" means use current version of the service
+	if len(api) > 0 {
+		if apiVersion != api {
+			return status.Errorf(codes.Unimplemented,
+				"unsupported API version: service implements API version '%s', but asked for '%s'", apiVersion, api)
+		}
 	}
-
 	return nil
 }
 
+// connect returns SQL database connection from the pool
 func (s *toDoServiceServer) connect(ctx context.Context) (*sql.Conn, error) {
 	c, err := s.db.Conn(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to connect to database-> "+err.Error())
 	}
-
 	return c, nil
 }
 
+// Create new todo task
 func (s *toDoServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (*v1.CreateResponse, error) {
+	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
@@ -59,12 +68,14 @@ func (s *toDoServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 		return nil, status.Error(codes.InvalidArgument, "reminder field has invalid format-> "+err.Error())
 	}
 
-	query := "INSERT INTO ToDo(`Title`, `Description`, `Reminder`) VALUES(?, ?, ?)"
-	res, err := c.ExecContext(ctx, query, req.ToDo.Title, req.ToDo.Description, reminder)
+	// insert ToDo entity data
+	res, err := c.ExecContext(ctx, "INSERT INTO ToDo(`Title`, `Description`, `Reminder`) VALUES(?, ?, ?)",
+		req.ToDo.Title, req.ToDo.Description, reminder)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to insert into ToDo-> "+err.Error())
 	}
 
+	// get ID of creates ToDo
 	id, err := res.LastInsertId()
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to retrieve id for created ToDo-> "+err.Error())
@@ -76,21 +87,23 @@ func (s *toDoServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (
 	}, nil
 }
 
+// Read todo task
 func (s *toDoServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.ReadResponse, error) {
+	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	rows, err := c.QueryContext(ctx,
-		"SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo WHERE `ID`=?",
-		req.Id,
-	)
+	// query ToDo by ID
+	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo WHERE `ID`=?",
+		req.Id)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to select from ToDo-> "+err.Error())
 	}
@@ -100,18 +113,16 @@ func (s *toDoServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 		if err := rows.Err(); err != nil {
 			return nil, status.Error(codes.Unknown, "failed to retrieve data from ToDo-> "+err.Error())
 		}
-
 		return nil, status.Error(codes.NotFound, fmt.Sprintf("ToDo with ID='%d' is not found",
 			req.Id))
 	}
 
+	// get ToDo data
 	var td v1.ToDo
 	var reminder time.Time
-
 	if err := rows.Scan(&td.Id, &td.Title, &td.Description, &reminder); err != nil {
 		return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row-> "+err.Error())
 	}
-
 	td.Reminder, err = ptypes.TimestampProto(reminder)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "reminder field has invalid format-> "+err.Error())
@@ -126,13 +137,17 @@ func (s *toDoServiceServer) Read(ctx context.Context, req *v1.ReadRequest) (*v1.
 		Api:  apiVersion,
 		ToDo: &td,
 	}, nil
+
 }
 
+// Update todo task
 func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (*v1.UpdateResponse, error) {
+	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
@@ -144,11 +159,9 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 		return nil, status.Error(codes.InvalidArgument, "reminder field has invalid format-> "+err.Error())
 	}
 
-	res, err := c.ExecContext(
-		ctx,
-		"UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?",
-		req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.Id,
-	)
+	// update ToDo
+	res, err := c.ExecContext(ctx, "UPDATE ToDo SET `Title`=?, `Description`=?, `Reminder`=? WHERE `ID`=?",
+		req.ToDo.Title, req.ToDo.Description, reminder, req.ToDo.Id)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to update ToDo-> "+err.Error())
 	}
@@ -169,6 +182,7 @@ func (s *toDoServiceServer) Update(ctx context.Context, req *v1.UpdateRequest) (
 	}, nil
 }
 
+// Delete todo task
 func (s *toDoServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (*v1.DeleteResponse, error) {
 	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
@@ -204,41 +218,39 @@ func (s *toDoServiceServer) Delete(ctx context.Context, req *v1.DeleteRequest) (
 	}, nil
 }
 
+// Read all todo tasks
 func (s *toDoServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest) (*v1.ReadAllResponse, error) {
+	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
+	// get SQL connection from pool
 	c, err := s.connect(ctx)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	rows, err := c.QueryContext(
-		ctx,
-		"SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo",
-	)
-
+	// get ToDo list
+	rows, err := c.QueryContext(ctx, "SELECT `ID`, `Title`, `Description`, `Reminder` FROM ToDo")
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to select from ToDo-> "+err.Error())
 	}
 	defer rows.Close()
 
 	var reminder time.Time
-	tds := []*v1.ToDo{}
-
+	list := []*v1.ToDo{}
 	for rows.Next() {
-		td := &v1.ToDo{}
+		td := new(v1.ToDo)
 		if err := rows.Scan(&td.Id, &td.Title, &td.Description, &reminder); err != nil {
 			return nil, status.Error(codes.Unknown, "failed to retrieve field values from ToDo row-> "+err.Error())
 		}
-
 		td.Reminder, err = ptypes.TimestampProto(reminder)
 		if err != nil {
 			return nil, status.Error(codes.Unknown, "reminder field has invalid format-> "+err.Error())
 		}
-		tds = append(tds, td)
+		list = append(list, td)
 	}
 
 	if err := rows.Err(); err != nil {
@@ -247,6 +259,6 @@ func (s *toDoServiceServer) ReadAll(ctx context.Context, req *v1.ReadAllRequest)
 
 	return &v1.ReadAllResponse{
 		Api:   apiVersion,
-		ToDos: tds,
+		ToDos: list,
 	}, nil
 }

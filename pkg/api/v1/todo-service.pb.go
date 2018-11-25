@@ -7,6 +7,8 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 import timestamp "github.com/golang/protobuf/ptypes/timestamp"
+import _ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
+import _ "google.golang.org/genproto/googleapis/api/annotations"
 
 import (
 	context "golang.org/x/net/context"
@@ -24,10 +26,15 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+// Task we have to do
 type ToDo struct {
-	Id                   int64                `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title                string               `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Description          string               `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Unique integer identifier of the todo task
+	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Title of the task
+	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	// Detail description of the todo task
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Date and time to remind the todo task
 	Reminder             *timestamp.Timestamp `protobuf:"bytes,4,opt,name=reminder,proto3" json:"reminder,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
@@ -38,7 +45,7 @@ func (m *ToDo) Reset()         { *m = ToDo{} }
 func (m *ToDo) String() string { return proto.CompactTextString(m) }
 func (*ToDo) ProtoMessage()    {}
 func (*ToDo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{0}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{0}
 }
 func (m *ToDo) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ToDo.Unmarshal(m, b)
@@ -86,8 +93,11 @@ func (m *ToDo) GetReminder() *timestamp.Timestamp {
 	return nil
 }
 
+// Request data to create new todo task
 type CreateRequest struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Task entity to add
 	ToDo                 *ToDo    `protobuf:"bytes,2,opt,name=toDo,proto3" json:"toDo,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -98,7 +108,7 @@ func (m *CreateRequest) Reset()         { *m = CreateRequest{} }
 func (m *CreateRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateRequest) ProtoMessage()    {}
 func (*CreateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{1}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{1}
 }
 func (m *CreateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateRequest.Unmarshal(m, b)
@@ -132,8 +142,11 @@ func (m *CreateRequest) GetToDo() *ToDo {
 	return nil
 }
 
+// Contains data of created todo task
 type CreateResponse struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// ID of created task
 	Id                   int64    `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -144,7 +157,7 @@ func (m *CreateResponse) Reset()         { *m = CreateResponse{} }
 func (m *CreateResponse) String() string { return proto.CompactTextString(m) }
 func (*CreateResponse) ProtoMessage()    {}
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{2}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{2}
 }
 func (m *CreateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateResponse.Unmarshal(m, b)
@@ -178,8 +191,11 @@ func (m *CreateResponse) GetId() int64 {
 	return 0
 }
 
+// Request data to read todo task
 type ReadRequest struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Unique integer identifier of the todo task
 	Id                   int64    `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -190,7 +206,7 @@ func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
 func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRequest) ProtoMessage()    {}
 func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{3}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{3}
 }
 func (m *ReadRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadRequest.Unmarshal(m, b)
@@ -224,8 +240,11 @@ func (m *ReadRequest) GetId() int64 {
 	return 0
 }
 
+// Contains todo task data specified in by ID request
 type ReadResponse struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Task entity read by ID
 	ToDo                 *ToDo    `protobuf:"bytes,2,opt,name=toDo,proto3" json:"toDo,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -236,7 +255,7 @@ func (m *ReadResponse) Reset()         { *m = ReadResponse{} }
 func (m *ReadResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadResponse) ProtoMessage()    {}
 func (*ReadResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{4}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{4}
 }
 func (m *ReadResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadResponse.Unmarshal(m, b)
@@ -270,8 +289,11 @@ func (m *ReadResponse) GetToDo() *ToDo {
 	return nil
 }
 
+// Request data to update todo task
 type UpdateRequest struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Task entity to update
 	ToDo                 *ToDo    `protobuf:"bytes,2,opt,name=toDo,proto3" json:"toDo,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -282,7 +304,7 @@ func (m *UpdateRequest) Reset()         { *m = UpdateRequest{} }
 func (m *UpdateRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateRequest) ProtoMessage()    {}
 func (*UpdateRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{5}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{5}
 }
 func (m *UpdateRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateRequest.Unmarshal(m, b)
@@ -316,8 +338,12 @@ func (m *UpdateRequest) GetToDo() *ToDo {
 	return nil
 }
 
+// Contains status of update operation
 type UpdateResponse struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Contains number of entities have beed updated
+	// Equals 1 in case of succesfull update
 	Updated              int64    `protobuf:"varint,2,opt,name=updated,proto3" json:"updated,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -328,7 +354,7 @@ func (m *UpdateResponse) Reset()         { *m = UpdateResponse{} }
 func (m *UpdateResponse) String() string { return proto.CompactTextString(m) }
 func (*UpdateResponse) ProtoMessage()    {}
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{6}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{6}
 }
 func (m *UpdateResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UpdateResponse.Unmarshal(m, b)
@@ -362,8 +388,11 @@ func (m *UpdateResponse) GetUpdated() int64 {
 	return 0
 }
 
+// Request data to delete todo task
 type DeleteRequest struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Unique integer identifier of the todo task to delete
 	Id                   int64    `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -374,7 +403,7 @@ func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
 func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteRequest) ProtoMessage()    {}
 func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{7}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{7}
 }
 func (m *DeleteRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteRequest.Unmarshal(m, b)
@@ -408,8 +437,12 @@ func (m *DeleteRequest) GetId() int64 {
 	return 0
 }
 
+// Contains status of delete operation
 type DeleteResponse struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// Contains number of entities have beed deleted
+	// Equals 1 in case of succesfull delete
 	Deleted              int64    `protobuf:"varint,2,opt,name=deleted,proto3" json:"deleted,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -420,7 +453,7 @@ func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
 func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
 func (*DeleteResponse) ProtoMessage()    {}
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{8}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{8}
 }
 func (m *DeleteResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteResponse.Unmarshal(m, b)
@@ -454,7 +487,9 @@ func (m *DeleteResponse) GetDeleted() int64 {
 	return 0
 }
 
+// Request data to read all todo task
 type ReadAllRequest struct {
+	// API versioning: it is my best practice to specify version explicitly
 	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -465,7 +500,7 @@ func (m *ReadAllRequest) Reset()         { *m = ReadAllRequest{} }
 func (m *ReadAllRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadAllRequest) ProtoMessage()    {}
 func (*ReadAllRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{9}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{9}
 }
 func (m *ReadAllRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadAllRequest.Unmarshal(m, b)
@@ -492,8 +527,11 @@ func (m *ReadAllRequest) GetApi() string {
 	return ""
 }
 
+// Contains list of all todo tasks
 type ReadAllResponse struct {
-	Api                  string   `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// API versioning: it is my best practice to specify version explicitly
+	Api string `protobuf:"bytes,1,opt,name=api,proto3" json:"api,omitempty"`
+	// List of all todo tasks
 	ToDos                []*ToDo  `protobuf:"bytes,2,rep,name=toDos,proto3" json:"toDos,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -504,7 +542,7 @@ func (m *ReadAllResponse) Reset()         { *m = ReadAllResponse{} }
 func (m *ReadAllResponse) String() string { return proto.CompactTextString(m) }
 func (*ReadAllResponse) ProtoMessage()    {}
 func (*ReadAllResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_todo_service_d364b01d64c69f11, []int{10}
+	return fileDescriptor_todo_service_396d173a76557e74, []int{10}
 }
 func (m *ReadAllResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadAllResponse.Unmarshal(m, b)
@@ -564,11 +602,16 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ToDoServiceClient interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
-	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
-	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	// Read all todo tasks
 	ReadAll(ctx context.Context, in *ReadAllRequest, opts ...grpc.CallOption) (*ReadAllResponse, error)
+	// Create new todo task
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	// Read todo task
+	Read(ctx context.Context, in *ReadRequest, opts ...grpc.CallOption) (*ReadResponse, error)
+	// Update todo task
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
+	// Delete todo task
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type toDoServiceClient struct {
@@ -577,6 +620,15 @@ type toDoServiceClient struct {
 
 func NewToDoServiceClient(cc *grpc.ClientConn) ToDoServiceClient {
 	return &toDoServiceClient{cc}
+}
+
+func (c *toDoServiceClient) ReadAll(ctx context.Context, in *ReadAllRequest, opts ...grpc.CallOption) (*ReadAllResponse, error) {
+	out := new(ReadAllResponse)
+	err := c.cc.Invoke(ctx, "/v1.ToDoService/ReadAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *toDoServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
@@ -615,26 +667,40 @@ func (c *toDoServiceClient) Delete(ctx context.Context, in *DeleteRequest, opts 
 	return out, nil
 }
 
-func (c *toDoServiceClient) ReadAll(ctx context.Context, in *ReadAllRequest, opts ...grpc.CallOption) (*ReadAllResponse, error) {
-	out := new(ReadAllResponse)
-	err := c.cc.Invoke(ctx, "/v1.ToDoService/ReadAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ToDoServiceServer is the server API for ToDoService service.
 type ToDoServiceServer interface {
-	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	Read(context.Context, *ReadRequest) (*ReadResponse, error)
-	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
-	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	// Read all todo tasks
 	ReadAll(context.Context, *ReadAllRequest) (*ReadAllResponse, error)
+	// Create new todo task
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	// Read todo task
+	Read(context.Context, *ReadRequest) (*ReadResponse, error)
+	// Update todo task
+	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
+	// Delete todo task
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 }
 
 func RegisterToDoServiceServer(s *grpc.Server, srv ToDoServiceServer) {
 	s.RegisterService(&_ToDoService_serviceDesc, srv)
+}
+
+func _ToDoService_ReadAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadAllRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ToDoServiceServer).ReadAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/v1.ToDoService/ReadAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ToDoServiceServer).ReadAll(ctx, req.(*ReadAllRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _ToDoService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -709,28 +775,14 @@ func _ToDoService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ToDoService_ReadAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ReadAllRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ToDoServiceServer).ReadAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/v1.ToDoService/ReadAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ToDoServiceServer).ReadAll(ctx, req.(*ReadAllRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _ToDoService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "v1.ToDoService",
 	HandlerType: (*ToDoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ReadAll",
+			Handler:    _ToDoService_ReadAll_Handler,
+		},
 		{
 			MethodName: "Create",
 			Handler:    _ToDoService_Create_Handler,
@@ -747,44 +799,56 @@ var _ToDoService_serviceDesc = grpc.ServiceDesc{
 			MethodName: "Delete",
 			Handler:    _ToDoService_Delete_Handler,
 		},
-		{
-			MethodName: "ReadAll",
-			Handler:    _ToDoService_ReadAll_Handler,
-		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "todo-service.proto",
 }
 
-func init() { proto.RegisterFile("todo-service.proto", fileDescriptor_todo_service_d364b01d64c69f11) }
+func init() { proto.RegisterFile("todo-service.proto", fileDescriptor_todo_service_396d173a76557e74) }
 
-var fileDescriptor_todo_service_d364b01d64c69f11 = []byte{
-	// 420 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0xcd, 0x8e, 0xd3, 0x30,
-	0x10, 0x56, 0x7e, 0x36, 0xbb, 0x3b, 0xa1, 0xd9, 0xc5, 0x70, 0x88, 0x22, 0x04, 0x91, 0x4f, 0xe5,
-	0x40, 0xa2, 0x06, 0x89, 0xd3, 0x8a, 0x15, 0xda, 0x3e, 0x41, 0x28, 0x0f, 0x90, 0xd6, 0x43, 0x65,
-	0x29, 0xad, 0x43, 0xe2, 0xf6, 0x11, 0x78, 0x6d, 0x90, 0xed, 0xb8, 0x6d, 0x22, 0xd2, 0x0b, 0xb7,
-	0xcc, 0x97, 0x6f, 0xe6, 0xfb, 0xe6, 0xc7, 0x40, 0xa4, 0x60, 0xe2, 0x53, 0x87, 0xed, 0x91, 0x6f,
-	0x30, 0x6b, 0x5a, 0x21, 0x05, 0x71, 0x8f, 0x8b, 0xe4, 0xc3, 0x56, 0x88, 0x6d, 0x8d, 0xb9, 0x46,
-	0xd6, 0x87, 0x9f, 0xb9, 0xe4, 0x3b, 0xec, 0x64, 0xb5, 0x6b, 0x0c, 0x89, 0xfe, 0x76, 0xc0, 0x5f,
-	0x89, 0xa5, 0x20, 0x11, 0xb8, 0x9c, 0xc5, 0x4e, 0xea, 0xcc, 0xbd, 0xd2, 0xe5, 0x8c, 0xbc, 0x85,
-	0x1b, 0xc9, 0x65, 0x8d, 0xb1, 0x9b, 0x3a, 0xf3, 0xfb, 0xd2, 0x04, 0x24, 0x85, 0x90, 0x61, 0xb7,
-	0x69, 0x79, 0x23, 0xb9, 0xd8, 0xc7, 0x9e, 0xfe, 0x77, 0x09, 0x91, 0x2f, 0x70, 0xd7, 0xe2, 0x8e,
-	0xef, 0x19, 0xb6, 0xb1, 0x9f, 0x3a, 0xf3, 0xb0, 0x48, 0x32, 0x63, 0x22, 0xb3, 0x26, 0xb2, 0x95,
-	0x35, 0x51, 0x9e, 0xb8, 0xf4, 0x19, 0x66, 0x2f, 0x2d, 0x56, 0x12, 0x4b, 0xfc, 0x75, 0xc0, 0x4e,
-	0x92, 0x47, 0xf0, 0xaa, 0x86, 0x6b, 0x47, 0xf7, 0xa5, 0xfa, 0x24, 0xef, 0xc0, 0x97, 0x62, 0x29,
-	0xb4, 0xa3, 0xb0, 0xb8, 0xcb, 0x8e, 0x8b, 0x4c, 0x59, 0x2f, 0x35, 0x4a, 0x0b, 0x88, 0x6c, 0x81,
-	0xae, 0x11, 0xfb, 0x0e, 0xff, 0x51, 0xc1, 0x34, 0xe9, 0xda, 0x26, 0x69, 0x0e, 0x61, 0x89, 0x15,
-	0x9b, 0x96, 0x1c, 0x27, 0x7c, 0x85, 0x57, 0x26, 0x61, 0x52, 0xe2, 0xba, 0xc9, 0x67, 0x98, 0xfd,
-	0x68, 0xd8, 0x7f, 0x74, 0xf9, 0x04, 0x91, 0x2d, 0x30, 0x69, 0x21, 0x86, 0xdb, 0x83, 0xe6, 0x58,
-	0xe7, 0x36, 0xa4, 0x0b, 0x98, 0x2d, 0xb1, 0xc6, 0x6b, 0xf2, 0xe3, 0x8e, 0x9f, 0x20, 0xb2, 0x29,
-	0xd7, 0x04, 0x99, 0xe6, 0x9c, 0x04, 0xfb, 0x90, 0x52, 0x88, 0xd4, 0xbc, 0xbe, 0xd5, 0xf5, 0xa4,
-	0x22, 0x7d, 0x81, 0x87, 0x13, 0x67, 0x52, 0xe2, 0x3d, 0xdc, 0xa8, 0xfe, 0xbb, 0xd8, 0x4d, 0xbd,
-	0xc1, 0x58, 0x0c, 0x5c, 0xfc, 0x71, 0x20, 0x54, 0xf1, 0x77, 0xf3, 0x04, 0x48, 0x0e, 0x81, 0xb9,
-	0x06, 0xf2, 0x5a, 0x51, 0x07, 0xa7, 0x95, 0x90, 0x4b, 0xa8, 0x97, 0xfc, 0x08, 0xbe, 0x72, 0x41,
-	0x1e, 0xd4, 0xbf, 0x8b, 0xa3, 0x48, 0x1e, 0xcf, 0x40, 0x4f, 0xcd, 0x21, 0x30, 0x3b, 0x30, 0xb5,
-	0x07, 0x0b, 0x35, 0xb5, 0x47, 0x2b, 0xca, 0x21, 0x30, 0x33, 0x34, 0x09, 0x83, 0x15, 0x98, 0x84,
-	0xd1, 0x88, 0x0b, 0xb8, 0xed, 0x47, 0x42, 0x88, 0x95, 0x3f, 0xcf, 0x30, 0x79, 0x33, 0xc0, 0x4c,
-	0xce, 0x3a, 0xd0, 0xcf, 0xeb, 0xf3, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xda, 0x15, 0x17, 0x41,
-	0x0b, 0x04, 0x00, 0x00,
+var fileDescriptor_todo_service_396d173a76557e74 = []byte{
+	// 678 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xa4, 0x54, 0x4f, 0x6f, 0xd3, 0x3c,
+	0x18, 0x57, 0x9a, 0xbe, 0xdd, 0xf6, 0x74, 0xed, 0xf6, 0x7a, 0x43, 0x54, 0xd5, 0x04, 0x51, 0x4e,
+	0xa8, 0x22, 0xf1, 0x1a, 0xa6, 0x1d, 0x06, 0x02, 0xc6, 0x2a, 0xc4, 0x39, 0x8c, 0x0b, 0xb7, 0x2c,
+	0x31, 0xa9, 0xa7, 0x34, 0x0e, 0x8e, 0xd3, 0x21, 0x21, 0x2e, 0x1c, 0x38, 0x71, 0x40, 0x70, 0xe3,
+	0x6b, 0xf1, 0x15, 0xf8, 0x06, 0x1c, 0xb8, 0xe2, 0xd8, 0x49, 0xb7, 0x6c, 0xeb, 0x84, 0xc4, 0xa9,
+	0xf5, 0xe3, 0xdf, 0xf3, 0xfb, 0x63, 0x3f, 0x31, 0x20, 0xc1, 0x22, 0xe6, 0xe4, 0x84, 0xcf, 0x69,
+	0x48, 0xdc, 0x8c, 0x33, 0xc1, 0x50, 0x6b, 0x3e, 0x1e, 0xde, 0x8d, 0x19, 0x8b, 0x13, 0x82, 0x55,
+	0xe5, 0xa4, 0x78, 0x83, 0x05, 0x9d, 0x91, 0x5c, 0x04, 0xb3, 0x4c, 0x83, 0x86, 0x3b, 0x15, 0x20,
+	0xc8, 0x28, 0x0e, 0xd2, 0x94, 0x89, 0x40, 0x50, 0x96, 0xe6, 0xd5, 0xee, 0x7d, 0xf5, 0x13, 0x3a,
+	0x31, 0x49, 0x9d, 0xfc, 0x2c, 0x88, 0x63, 0xc2, 0x31, 0xcb, 0x14, 0xe2, 0x2a, 0xda, 0xfe, 0x64,
+	0x40, 0xfb, 0x98, 0x4d, 0x18, 0xea, 0x43, 0x8b, 0x46, 0x03, 0xc3, 0x32, 0xee, 0x99, 0xbe, 0xfc,
+	0x87, 0xb6, 0xe1, 0x3f, 0x41, 0x45, 0x42, 0x06, 0x2d, 0x59, 0x5a, 0xf3, 0xf5, 0x02, 0x59, 0xd0,
+	0x8d, 0x48, 0x1e, 0x72, 0xaa, 0x08, 0x07, 0xa6, 0xda, 0xbb, 0x58, 0x42, 0xfb, 0xb0, 0xca, 0xc9,
+	0x8c, 0xa6, 0x11, 0xe1, 0x83, 0xb6, 0xdc, 0xee, 0x7a, 0x43, 0x57, 0xfb, 0x75, 0xeb, 0x40, 0xee,
+	0x71, 0x1d, 0xc8, 0x5f, 0x60, 0xed, 0x27, 0xd0, 0x3b, 0xe2, 0x24, 0x10, 0xc4, 0x27, 0x6f, 0x0b,
+	0xb9, 0x8b, 0x36, 0xc1, 0x94, 0x01, 0x95, 0xa3, 0x35, 0xbf, 0xfc, 0x8b, 0x76, 0xa0, 0x2d, 0xa4,
+	0x55, 0xe5, 0xa8, 0xeb, 0xad, 0xba, 0xf3, 0xb1, 0x5b, 0x5a, 0xf7, 0x55, 0xd5, 0xf6, 0xa0, 0x5f,
+	0x13, 0xe4, 0x99, 0x0c, 0x48, 0xae, 0x61, 0xd0, 0x21, 0x5b, 0x75, 0x48, 0x1b, 0x43, 0xd7, 0x27,
+	0x41, 0xb4, 0x5c, 0xf2, 0x72, 0xc3, 0x63, 0x58, 0xd7, 0x0d, 0x4b, 0x25, 0x6e, 0x36, 0x29, 0x53,
+	0xbe, 0xca, 0xa2, 0x7f, 0x48, 0xf9, 0x08, 0xfa, 0x35, 0xc1, 0x52, 0x0b, 0x03, 0x58, 0x29, 0x14,
+	0xa6, 0x76, 0x5e, 0x2f, 0xed, 0x31, 0xf4, 0x26, 0x24, 0x21, 0x37, 0xc9, 0x5f, 0x4e, 0x2c, 0x05,
+	0xeb, 0x96, 0x9b, 0x04, 0x23, 0x85, 0x59, 0x08, 0x56, 0x4b, 0xdb, 0x86, 0x7e, 0x79, 0x5e, 0x87,
+	0x49, 0xb2, 0x54, 0xd1, 0x3e, 0x82, 0x8d, 0x05, 0x66, 0xa9, 0xc4, 0x1d, 0x39, 0x8e, 0x32, 0x7f,
+	0x2e, 0x05, 0xcc, 0xc6, 0xb1, 0xe8, 0xb2, 0xf7, 0xc5, 0x84, 0x6e, 0xb9, 0x7e, 0xa9, 0x3f, 0x27,
+	0xf4, 0x02, 0x56, 0x2a, 0x52, 0x84, 0x4a, 0x6c, 0xd3, 0xc5, 0x70, 0xab, 0x51, 0xd3, 0xaa, 0xf6,
+	0xf6, 0xc7, 0x1f, 0x3f, 0xbf, 0xb5, 0xfa, 0x68, 0x1d, 0xcf, 0xc7, 0xb8, 0xfc, 0x38, 0x71, 0x20,
+	0xdb, 0x27, 0xd0, 0xd1, 0x73, 0x85, 0xfe, 0x2f, 0x9b, 0x1a, 0x43, 0x3a, 0x44, 0x17, 0x4b, 0x15,
+	0xcd, 0x96, 0xa2, 0xe9, 0xd9, 0xab, 0x35, 0xcd, 0x81, 0x31, 0x42, 0x4f, 0xa1, 0x5d, 0xca, 0xa1,
+	0x8d, 0x5a, 0xb8, 0x66, 0xd8, 0x3c, 0x2f, 0x54, 0xfd, 0xb7, 0x54, 0xff, 0x06, 0xea, 0x2d, 0x6c,
+	0xbc, 0xa7, 0xd1, 0x07, 0x14, 0x43, 0x47, 0xdf, 0xbc, 0xf6, 0xd1, 0x18, 0x23, 0xed, 0xa3, 0x39,
+	0x18, 0xf6, 0xbe, 0xe2, 0xd9, 0x1d, 0xa2, 0x73, 0x9e, 0xf2, 0xac, 0x5c, 0x49, 0x26, 0x1d, 0xbd,
+	0xbe, 0xed, 0x5d, 0xbf, 0x81, 0x9e, 0x43, 0x47, 0xdf, 0xb8, 0x16, 0x6a, 0x0c, 0x8c, 0x16, 0x6a,
+	0x0e, 0x44, 0x6d, 0x78, 0xd4, 0x34, 0xfc, 0xec, 0xb7, 0xf1, 0xf5, 0xf0, 0x97, 0x81, 0x3e, 0x1b,
+	0xb0, 0x5e, 0xde, 0x8c, 0x55, 0xbd, 0x74, 0xf6, 0x19, 0xe0, 0x98, 0x39, 0x31, 0xcf, 0x42, 0x67,
+	0x2a, 0x44, 0xe6, 0x70, 0xc9, 0xeb, 0xcc, 0x68, 0xc8, 0x59, 0x85, 0x70, 0x44, 0x21, 0x18, 0xa7,
+	0x41, 0x62, 0xc9, 0x17, 0xe3, 0x94, 0x84, 0x02, 0x4d, 0x4a, 0x60, 0x7e, 0x80, 0x71, 0x4c, 0xc5,
+	0xb4, 0x38, 0x71, 0x43, 0x36, 0xc3, 0x73, 0x41, 0x78, 0x54, 0xa4, 0x6c, 0xfe, 0xb7, 0x6c, 0x9e,
+	0x39, 0x76, 0x77, 0x47, 0x86, 0xe1, 0x6d, 0x06, 0x59, 0x96, 0xd0, 0x50, 0xbd, 0x83, 0xf8, 0x34,
+	0x67, 0xe9, 0xc1, 0x95, 0x8a, 0xff, 0x10, 0xcc, 0xbd, 0xdd, 0x3d, 0xb4, 0x07, 0x23, 0x9f, 0x88,
+	0x82, 0xa7, 0x24, 0xb2, 0xce, 0xa6, 0x24, 0xb5, 0xc4, 0x94, 0x58, 0x52, 0x82, 0x15, 0x3c, 0x24,
+	0x56, 0xc4, 0x48, 0x6e, 0xc9, 0x17, 0xd5, 0x22, 0xef, 0x68, 0x2e, 0x5c, 0xd4, 0x81, 0xf6, 0xf7,
+	0x96, 0xb1, 0x72, 0xd2, 0x51, 0x2f, 0xdd, 0x83, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xbc, 0x40,
+	0xae, 0x90, 0xe2, 0x05, 0x00, 0x00,
 }
